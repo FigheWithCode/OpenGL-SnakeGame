@@ -101,7 +101,7 @@ void Snake::draw(Shader &SHADER) {
     model = glm::translate(model,position);
     SHADER.setMat("model", model);
 
-    glDrawArrays(GL_TRIANGLES,0,6);
+    glDrawArrays(GL_TRIANGLES,0,6);//画的是蛇头
 
     if (glfwGetTime()-lastTime>.2f) {
         prev_positions.push_back(position);
@@ -125,6 +125,19 @@ void Snake::eat_collision(Fruit &FRUIT) {
         FRUIT.changeLoc();
         size++;
     }
+}
+
+bool Snake::hintHimself() {
+    if (prev_positions.size()<=3) return false;
+
+    for (int i = 0;i+3<prev_positions.size();i++) {
+        float dx = position.x-prev_positions[i].x;
+        float dy = position.y-prev_positions[i].y;
+
+        if (sqrt(dx*dx+dy*dy)<.5f) return true;
+    }
+
+    return false;
 }
 
 void Snake::update_Dir() {

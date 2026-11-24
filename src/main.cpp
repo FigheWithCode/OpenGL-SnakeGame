@@ -104,6 +104,10 @@ int main() {
         if (deltaTime > 0.f)
             std::cout << "Position:" << player.position.x << " , " << player.position.y << " Frames per second " << 1.f / deltaTime << std::endl;
 
+        if (player.hintHimself()) {
+            glfwSetWindowShouldClose(window,true);
+        }
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

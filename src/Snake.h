@@ -39,13 +39,14 @@ public:
     void draw(Shader& SHADER);
     void eat_collision(Fruit& FRUIT);
     void delete_resource();
+    bool hintHimself();
 
 private:
 
     unsigned int VAO,VBO;
     std::vector<float> vertices;
     std::vector<glm::vec3> prev_positions;
-    int size = 10;
+    int size = 0;
     float lastTime=0;
     void update_Dir();
 };
