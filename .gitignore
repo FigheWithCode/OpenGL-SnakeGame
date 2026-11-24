@@ -1,0 +1,34 @@
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# CLion / CMake build trees
+cmake-build-*/
+build/
+out/
+compile_commands.json
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.ninja
+.ninja_deps
+.ninja_log
+
+# Local tool / agent folders
+.claude/
+.cursor/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Compiled objects / binaries
+*.o
+*.obj
+*.a
+*.so
+*.dll
+*.exe
+GameStart
