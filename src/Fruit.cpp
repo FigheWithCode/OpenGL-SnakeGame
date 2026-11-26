@@ -45,7 +45,6 @@ void Fruit::changeLoc() {
     y1 = y1-5.f;
 
     position = glm::vec3(x1, y1, .1f);
-
 }
 
 void Fruit::delete_source() {

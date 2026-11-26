@@ -149,6 +149,19 @@ void Snake::draw(Shader &SHADER) {
 void Snake::eat_collision(Fruit &FRUIT) {
     if (sqrt(pow((position.x-FRUIT.position.x),2)+pow((position.y-FRUIT.position.y),2))<.5f) {
         FRUIT.changeLoc();
+        bool UnContain = false;
+        while (!UnContain) {
+            UnContain = true;
+            for (auto i=0;i<body.size();i++) {
+                float dx = FRUIT.position.x-body[i].to.x;
+                float dy = FRUIT.position.y-body[i].to.y;
+                if (sqrt(dx*dx+dy*dy)<.5f) {
+                    UnContain = false;
+                    FRUIT.changeLoc();
+                    break;
+                }
+            }
+        }
         size++;
     }
 }
