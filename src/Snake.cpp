@@ -42,8 +42,6 @@ Snake::Snake(Texture TEXTURE,float Speed):
     glEnableVertexAttribArray(1);
 
     lastTime = 0.f;
-    for (int i = 0;i<size;i++)
-        prev_positions.push_back(glm::vec3(0.f));
 }
 
 void Snake::delete_resource() {
@@ -103,7 +101,7 @@ void Snake::draw(Shader &SHADER) {
 
     glDrawArrays(GL_TRIANGLES,0,6);//画的是蛇头
 
-    if (glfwGetTime()-lastTime>.2f) {
+    if (glfwGetTime()-lastTime>.33f) {
         prev_positions.push_back(position);
         lastTime = glfwGetTime();
     }
