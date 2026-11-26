@@ -147,7 +147,7 @@ void Snake::draw(Shader &SHADER) {
 }
 
 void Snake::eat_collision(Fruit &FRUIT) {
-    if (sqrt(pow((position.x-FRUIT.position.x),2)+pow((position.y-FRUIT.position.y),2))<.7f) {
+    if (sqrt(pow((position.x-FRUIT.position.x),2)+pow((position.y-FRUIT.position.y),2))<.5f) {
         FRUIT.changeLoc();
         size++;
     }
