@@ -63,7 +63,7 @@ int main() {
     const char* fragmentShaderPath = "Shaders/fragment";
     Shader shader(vertexShaderPath,fragmentShaderPath);
 
-    Texture container_texture("Assets/container.jpg",false);
+    Texture container_texture("Assets/apple.jpeg",false);
     Texture face_texture("Assets/awesomeface.png",true);
 
     Camera camera=Camera();

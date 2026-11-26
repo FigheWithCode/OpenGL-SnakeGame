@@ -147,23 +147,34 @@ void Snake::draw(Shader &SHADER) {
 }
 
 void Snake::eat_collision(Fruit &FRUIT) {
-    if (sqrt(pow((position.x-FRUIT.position.x),2)+pow((position.y-FRUIT.position.y),2))<.5f) {
-        FRUIT.changeLoc();
-        bool UnContain = false;
-        while (!UnContain) {
-            UnContain = true;
-            for (auto i=0;i<body.size();i++) {
-                float dx = FRUIT.position.x-body[i].to.x;
-                float dy = FRUIT.position.y-body[i].to.y;
-                if (sqrt(dx*dx+dy*dy)<.5f) {
-                    UnContain = false;
-                    FRUIT.changeLoc();
+    if (abs(position.x-FRUIT.position.x)>0.1f || abs(position.y-FRUIT.position.y)>0.1f) return;
+
+    std::vector<glm::vec3> freeCells;
+    for (int x = -7;x<=7;x++) {
+        for (int y = -5;y<=5;y++) {
+            glm::vec3 p{(float)x,(float)y,0.1f};
+
+            if (abs(p.x-position.x)<.1f && abs(p.y-position.y)<.1f) continue;//避开开头
+
+            bool onBody = false;
+            for (auto& s: body) {
+                if (abs(p.x-s.to.x)<.1f && abs(p.y-s.to.y)<.1f) {
+                    onBody = true;
                     break;
                 }
             }
+
+            if (!onBody) freeCells.push_back(p);
         }
-        size++;
     }
+
+    if (freeCells.empty()) {
+        size++;
+        return;
+    }
+
+    FRUIT.position = freeCells[rand()%freeCells.size()];
+    size++;
 }
 
 bool Snake::hintHimself() {

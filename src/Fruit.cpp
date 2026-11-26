@@ -27,11 +27,11 @@ Fruit::Fruit(Texture TEXTURE):texture(TEXTURE) {
     glEnableVertexAttribArray(1);
 
     srand(time(0));
-    float x1 = (float)((rand()%1001)/1000.f);
-    float y1 = (float)((rand()%1001)/1000.f);
+    float x1 = (float)(rand()%15);
+    float y1 = (float)(rand()%11);
 
-    x1 = x1*16.f-8.f;
-    y1 = y1*12.f-6.f;
+    x1 = x1-7.f;
+    y1 = y1-5.f;
 
     position = glm::vec3(x1, y1, 0.1f);
 }
