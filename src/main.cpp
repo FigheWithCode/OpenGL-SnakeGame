@@ -13,6 +13,7 @@
 #include "Snake.h"
 #include "Fruit.h"
 #include "Game.h"
+#include"backGround.h"
 
 const float width = 800;
 const float height = 600;
@@ -64,12 +65,14 @@ int main() {
     Shader shader(vertexShaderPath,fragmentShaderPath);
 
     Texture container_texture("Assets/apple.jpeg",false);
-    Texture face_texture("Assets/awesomeface.png",true);
+    Texture face_texture("Assets/snake.jpeg",false);
+    Texture Background_texture("Assets/backGround.jpg",false);
 
     Camera camera=Camera();
     Snake player = Snake(face_texture);
     Game game = Game();
     Fruit fruit = Fruit(container_texture);
+    backGround back = backGround(Background_texture);
 
     shader.use();
     shader.setInt("texture1",0);
@@ -85,6 +88,7 @@ int main() {
         glClearColor(.2f,.5f,.3f,1.f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        back.draw(camera);
         game.draw(camera);
 
         shader.use();

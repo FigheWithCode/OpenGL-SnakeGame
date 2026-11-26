@@ -21,6 +21,7 @@ add_executable(GameStart
         src/Game.cpp
         src/Fruit.cpp
         src/stbi_image.cpp
+        src/backGround.cpp
         third_party/glad/src/glad.c
 )
 
