@@ -42,6 +42,9 @@ Snake::Snake(Texture TEXTURE,float Speed):
     glEnableVertexAttribArray(1);
 
     lastTime = 0.f;
+    for (int i = 1;i<=size;i++) {
+        prev_positions.push_back(position+glm::vec3(spacing*i,0.0f,0.0f));
+    }
 }
 
 void Snake::delete_resource() {
@@ -67,7 +70,19 @@ void Snake::ChageDir(Direction d) {
 }
 
 void Snake::Move(float dt, Game& GAME) {
-    position += speed*direction*dt;
+    if (glfwGetTime()-lastTime<stepInterval)
+        return;
+    lastTime = glfwGetTime();
+
+    direction = future_direction;
+    update_Dir();
+
+    prev_positions.insert(prev_positions.begin(),position);//旧头变为第一节新的身体
+    if (prev_positions.size()>size) {
+        prev_positions.pop_back();
+    }
+    position += direction*spacing;//头向前一格
+
 
     position.x = (position.x<-8.f)? position.x+16.f:position.x;
     position.x = (position.x>8.f)? position.x-16.f:position.x;
@@ -75,19 +90,6 @@ void Snake::Move(float dt, Game& GAME) {
     position.y = (position.y<-6.f)? position.y+12.f:position.y;
     position.y = (position.y>6.f)? position.y-12.f:position.y;
 
-    if (future_direction!= direction) {
-        float point = GAME.getNearest(position,dir);
-        if (direction == right || direction == left) {
-            if (abs(point-position.x)<.05f)
-                direction = future_direction;
-        }
-        if (direction == up || direction == down) {
-            if (abs(position.y-point)<.05f)
-                direction = future_direction;
-        }
-    }
-
-    update_Dir();
 }
 
 void Snake::draw(Shader &SHADER) {
@@ -101,14 +103,6 @@ void Snake::draw(Shader &SHADER) {
 
     glDrawArrays(GL_TRIANGLES,0,6);//画的是蛇头
 
-    if (glfwGetTime()-lastTime>.33f) {
-        prev_positions.push_back(position);
-        lastTime = glfwGetTime();
-    }
-
-    if (prev_positions.size()>size) {
-        prev_positions.erase(prev_positions.begin());
-    }
 
     for (int i = 0;i<prev_positions.size();i++) {
         glm::mat4 model = glm::mat4(1.0f);
@@ -119,16 +113,14 @@ void Snake::draw(Shader &SHADER) {
 }
 
 void Snake::eat_collision(Fruit &FRUIT) {
-    if (sqrt(pow((position.x-FRUIT.position.x),2)+pow((position.y-FRUIT.position.y),2))<.5f) {
+    if (sqrt(pow((position.x-FRUIT.position.x),2)+pow((position.y-FRUIT.position.y),2))<.7f) {
         FRUIT.changeLoc();
         size++;
     }
 }
 
 bool Snake::hintHimself() {
-    if (prev_positions.size()<=3) return false;
-
-    for (int i = 0;i+3<prev_positions.size();i++) {
+    for (int i = 0;i<prev_positions.size();i++) {
         float dx = position.x-prev_positions[i].x;
         float dy = position.y-prev_positions[i].y;
 

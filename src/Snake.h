@@ -46,7 +46,9 @@ private:
     unsigned int VAO,VBO;
     std::vector<float> vertices;
     std::vector<glm::vec3> prev_positions;
-    int size = 0;
+    int size = 2;
     float lastTime=0;
+    float stepInterval = 0.2f;
+    float spacing = 1.f;
     void update_Dir();
 };
