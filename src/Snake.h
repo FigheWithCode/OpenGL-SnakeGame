@@ -45,10 +45,16 @@ private:
 
     unsigned int VAO,VBO;
     std::vector<float> vertices;
-    std::vector<glm::vec3> prev_positions;
+    struct Segment {
+        glm::vec3 from;
+        glm::vec3 to;
+    };
+    Segment head;
+    std::vector<Segment> body;
     int size = 2;
     float lastTime=0;
     float stepInterval = 0.2f;
     float spacing = 1.f;
     void update_Dir();
+    glm::vec3 visualPos(const Segment s,float t) const;
 };

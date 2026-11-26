@@ -41,10 +41,15 @@ Snake::Snake(Texture TEXTURE,float Speed):
     glVertexAttribPointer(1,2, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(3*sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    lastTime = 0.f;
+    head.from = head.to = glm::vec3(0.0f,0.0f,0.0f);
+    position = head.to;
+
+    body.clear();
     for (int i = 1;i<=size;i++) {
-        prev_positions.push_back(position+glm::vec3(spacing*i,0.0f,0.0f));
+        glm::vec3 p = head.to+glm::vec3(spacing*i,0.0f,0.0f);
+        body.push_back({p,p});
     }
+    lastTime = glfwGetTime();
 }
 
 void Snake::delete_resource() {
@@ -77,39 +82,68 @@ void Snake::Move(float dt, Game& GAME) {
     direction = future_direction;
     update_Dir();
 
-    prev_positions.insert(prev_positions.begin(),position);//旧头变为第一节新的身体
-    if (prev_positions.size()>size) {
-        prev_positions.pop_back();
+    std::vector<glm::vec3> oldLogic;
+    oldLogic.push_back(head.to);
+    for (auto& s: body) oldLogic.push_back(s.to);
+
+    glm::vec3 newHead = head.to+direction*spacing;
+
+    if (newHead.x<-8.f) {
+        newHead.x=8.f;
     }
-    position += direction*spacing;//头向前一格
+    if (newHead.x>8.f) {
+        newHead.x=-8.f;
+    }
+    if (newHead.y<-6.f) {
+        newHead.y=6.f;
+    }
+    if (newHead.y>6.f) {
+        newHead.y = -6.f;
+    }
 
+    std::vector<glm::vec3> newLogic;
+    newLogic.push_back(newHead);
+    for (auto i=0;i<oldLogic.size() && newLogic.size()<size+1;i++) newLogic.push_back(oldLogic[i]);//整个链的长度为size+1（包含了头）
 
-    position.x = (position.x<-8.f)? position.x+16.f:position.x;
-    position.x = (position.x>8.f)? position.x-16.f:position.x;
+    //设置插值点位
+    head.from = oldLogic[0];
+    head.to = newLogic[0];
+    position = head.to;
 
-    position.y = (position.y<-6.f)? position.y+12.f:position.y;
-    position.y = (position.y>6.f)? position.y-12.f:position.y;
+    body.clear();
+    for (auto i = 1;i<newLogic.size();i++) {
+        Segment s;
+        s.to = newLogic[i];
+        s.from = (i<oldLogic.size())? oldLogic[i]: newLogic[i];
+        body.push_back(s);
+    }
+}
 
+glm::vec3 Snake::visualPos(const Segment s, float t) const {
+    bool Crossed = std::abs(s.to.x-s.from.x) > 8.f || std::abs(s.to.y-s.from.y) > 6.f;
+    if (Crossed)
+        return s.to;//穿墙的话直接闪现，避免横穿全屏
+    t = glm::clamp(t,0.f,1.f);
+    return glm::mix(s.from,s.to,t);
 }
 
 void Snake::draw(Shader &SHADER) {
+    float t = (glfwGetTime()-lastTime)/stepInterval;
+
     SHADER.use();
     texture.use(0);
     glBindVertexArray(VAO);
 
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model,position);
-    SHADER.setMat("model", model);
-
-    glDrawArrays(GL_TRIANGLES,0,6);//画的是蛇头
-
-
-    for (int i = 0;i<prev_positions.size();i++) {
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model,prev_positions[i]);
+    auto drawAt = [&](const glm::vec3& p) {
+        glm::mat4 model(1.f);
+        model = glm::translate(model,p);
         SHADER.setMat("model", model);
-        glDrawArrays(GL_TRIANGLES,0,6);
-    }
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    };
+
+    drawAt(visualPos(head,t));
+    for (const auto& s:body) drawAt(visualPos(s,t));;
+
 }
 
 void Snake::eat_collision(Fruit &FRUIT) {
@@ -120,9 +154,9 @@ void Snake::eat_collision(Fruit &FRUIT) {
 }
 
 bool Snake::hintHimself() {
-    for (int i = 0;i<prev_positions.size();i++) {
-        float dx = position.x-prev_positions[i].x;
-        float dy = position.y-prev_positions[i].y;
+    for (int i = 0;i<body.size();i++) {
+        float dx = position.x-body[i].to.x;
+        float dy = position.y-body[i].to.y;
 
         if (sqrt(dx*dx+dy*dy)<.5f) return true;
     }
