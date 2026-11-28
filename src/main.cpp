@@ -14,6 +14,7 @@
 #include "Fruit.h"
 #include "Game.h"
 #include"backGround.h"
+#include "GameOver.h"
 
 const float width = 800;
 const float height = 600;
@@ -24,8 +25,11 @@ float lastFrame = 0.f;
 void framebuffer_size_callback(GLFWwindow* window,int width, int height) {
     glViewport(0, 0, width, height);
 }
+
+bool Isend = false;
+
 void processInput(GLFWwindow *window, Snake &PLAYER) {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    if ((glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) && Isend)
         glfwSetWindowShouldClose(window, true);
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS ||glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
@@ -37,7 +41,6 @@ void processInput(GLFWwindow *window, Snake &PLAYER) {
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS||glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
         PLAYER.ChageDir(snake_RIGHT);
 }
-
 
 int main() {
     glfwInit();
@@ -67,12 +70,14 @@ int main() {
     Texture container_texture("Assets/apple.jpeg",false);
     Texture face_texture("Assets/snake.jpeg",false);
     Texture Background_texture("Assets/backGround.jpg",false);
+    Texture GB("Assets/GameOver.png",true);
 
     Camera camera=Camera();
     Snake player = Snake(face_texture);
     Game game = Game();
     Fruit fruit = Fruit(container_texture);
     backGround back = backGround(Background_texture);
+    GameOver go = GameOver(GB);
 
     shader.use();
     shader.setInt("texture1",0);
@@ -109,7 +114,11 @@ int main() {
             std::cout << "Position:" << player.position.x << " , " << player.position.y << " Frames per second " << 1.f / deltaTime << std::endl;
 
         if (player.hintHimself()) {
-            glfwSetWindowShouldClose(window,true);
+            Isend = true;
+        }
+
+        if (Isend) {
+            go.draw(camera);
         }
 
         glfwSwapBuffers(window);
