@@ -75,13 +75,12 @@ void Snake::ChageDir(Direction d) {
 }
 
 void Snake::Move(float dt, Game& GAME) {
-    if (glfwGetTime()-lastTime<stepInterval)
-        return;
-    lastTime = glfwGetTime();
-
     direction = future_direction;
     update_Dir();
 
+    if (glfwGetTime()-lastTime<stepInterval)
+        return;
+    lastTime = glfwGetTime();
     std::vector<glm::vec3> oldLogic;
     oldLogic.push_back(head.to);
     for (auto& s: body) oldLogic.push_back(s.to);

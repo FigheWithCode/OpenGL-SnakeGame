@@ -42,7 +42,6 @@ public:
     bool hintHimself();
 
 private:
-
     unsigned int VAO,VBO;
     std::vector<float> vertices;
     struct Segment {
