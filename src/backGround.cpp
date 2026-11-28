@@ -1,6 +1,6 @@
 #include "backGround.h"
 
-backGround::backGround(Texture texture) : texture(texture),shader(Shader("Shaders/grid_vs","Shaders/grid_fs")) {
+backGround::backGround(Texture texture) : texture(texture),shader(Shader("Shaders/vertex","Shaders/fragment")) {
     vertices = {
         // 位置 x,y,z          UV
         -8.f, -6.f, 0.f,     0.f, 0.f,
@@ -35,6 +35,7 @@ void backGround::draw(Camera& cam) {
     glm::mat4 projection = glm::ortho(-8.f, 8.f, -6.f, 6.f, -1.f, 1.f);
     shader.setMat("projection", projection);
 
+    shader.setInt("texture1",0);
     texture.use(0);
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES,0,6);
